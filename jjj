@@ -1,0 +1,311 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+
+public class CakeOrder
+{
+    public string Form { get; set; }
+    public string Size { get; set; }
+    public string Flavor { get; set; }
+    public int Quantity { get; set; }
+    public string Glaze { get; set; }
+    public string Decor { get; set; }
+
+    
+    private void ChooseMainMenu()
+    {
+        Console.Clear();
+        Console.WriteLine("Выберите пункт основного меню:");
+        Console.WriteLine("1. Форма торта");
+        Console.WriteLine("2. Размер торта");
+        Console.WriteLine("3. Вкус торта");
+        Console.WriteLine("4. Количество бисквитов");
+        Console.WriteLine("5. Глазурь");
+        Console.WriteLine("6. Декор");
+        Console.WriteLine("7. Завершить заказ");
+
+        int choice = Convert.ToInt32(Console.ReadLine());
+
+        switch (choice)
+        {
+            case 1:
+                ChooseCakeForm();
+                break;
+            case 2:
+                ChooseCakeSize();
+                break;
+            case 3:
+                ChooseCakeFlavor();
+                break;
+            case 4:
+                ChooseCakeQuantity();
+                break;
+            case 5:
+                ChooseCakeGlaze();
+                break;
+            case 6:
+                ChooseCakeDecor();
+                break;
+            case 7:
+                SaveOrder();
+                break;
+            default:
+                Console.WriteLine("выберите пункт из меню.");
+                ChooseMainMenu();
+                break;
+        }
+    }
+
+    
+    private void ChooseSubMenu(string menuName, List<string> menuItems)
+    {
+        Console.Clear();
+        Console.WriteLine($"выберите {menuName}:");
+        for (int i = 0; i < menuItems.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {menuItems[i]}");
+        }
+        Console.WriteLine($"{menuItems.Count + 1}. вернуться в основное меню");
+
+        int choice = Convert.ToInt32(Console.ReadLine());
+
+        if (choice >= 1 && choice <= menuItems.Count)
+        {
+           
+            switch (menuName)
+            {
+                case "форму торта":
+                    Form = menuItems[choice - 1];
+                    break;
+                case "размер торта":
+                    Size = menuItems[choice - 1];
+                    break;
+                case "вкус торта":
+                    Flavor = menuItems[choice - 1];
+                    break;
+                case "количество тортов":
+                    Quantity = Convert.ToInt32(menuItems[choice - 1]);
+                    break;
+                case "глазурь":
+                    Glaze = menuItems[choice - 1];
+                    break;
+                case "декор":
+                    Decor = menuItems[choice - 1];
+                    break;
+            }
+
+            ChooseMainMenu();
+        }
+        else if (choice == menuItems.Count + 1)
+        {
+            ChooseMainMenu();
+        }
+        else
+        {
+            Console.WriteLine(" выберите пункт из меню.");
+            ChooseSubMenu(menuName, menuItems);
+        }
+    }
+
+    
+    private void ChooseCakeForm()
+    {
+        List<string> forms = new List<string> { "круглая", "квадрат", "прямоугольник" };
+        ChooseSubMenu("форма торта", forms);
+    }
+
+    
+    private void ChooseCakeSize()
+    {
+        List<string> sizes = new List<string> { "маленький", "средний", "большой" };
+        ChooseSubMenu("размер торта", sizes);
+    }
+
+  
+    private void ChooseCakeFlavor()
+    {
+        List<string> flavors = new List<string> { "шоколадный", "фисташковый", "ванильный" };
+        ChooseSubMenu("вкус торта", flavors);
+    }
+
+    
+    private void ChooseCakeQuantity()
+    {
+        List<string> quantities = new List<string> { "1", "2", "3" };
+        ChooseSubMenu("количество бисквитов", quantities);
+    }
+
+   
+    private void ChooseCakeGlaze()
+    {
+        List<string> glazes = new List<string> { "шоколадная", "вишневая", "крем-брюле" };
+        ChooseSubMenu("глазурь", glazes);
+    }
+
+    
+    private void ChooseCakeDecor()
+    {
+        List<string> decors = new List<string> { "цветы", "орехи", "ягоды" };
+        ChooseSubMenu("декор", decors);
+    }
+
+    
+    private void SaveOrder()
+    {
+        string orderDetails = $"Форма: {Form}\nРазмер: {Size}\nВкус: {Flavor}\nКоличество: {Quantity}\nГлазурь: {Glaze}\nДекор: {Decor}";
+        
+
+        
+        using (StreamWriter writer = new StreamWriter("История заказов.txt", true))
+        {
+            writer.WriteLine("----------");
+            writer.WriteLine(orderDetails);
+            
+        }
+
+        Console.WriteLine("Заказ  оформлен");
+        Console.WriteLine("Нажмите любую клавишу для продолжения...");
+        Console.ReadKey();
+    }
+
+   
+   
+   
+    public void PlaceOrder()
+    {
+        Console.WriteLine("добро пожаловать в кондитерскую.");
+        Console.WriteLine(" выберите пункты из меню.");
+
+        ChooseMainMenu();
+    }
+}
+
+
+public static class ArrowMenu
+{
+    
+    private enum Direction { Up, Down }
+
+    
+    public static int ShowMenu(string title, List<string> menuItems)
+    {
+        int selectedItemIndex = 0;
+
+        ConsoleKey key;
+        do
+        {
+            Console.Clear();
+            Console.WriteLine(title);
+
+            for (int i = 0; i < menuItems.Count; i++)
+            {
+                if (i == selectedItemIndex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write("➤ ");
+                }
+                else
+                {
+                    Console.Write("  ");
+                }
+                Console.WriteLine(menuItems[i]);
+                Console.ResetColor();
+            }
+
+            key = Console.ReadKey().Key;
+
+            
+            switch (key)
+            {
+                case ConsoleKey.UpArrow:
+                    selectedItemIndex = ChangeSelectedItemIndex(selectedItemIndex, Direction.Up, menuItems.Count);
+                    break;
+                case ConsoleKey.DownArrow:
+                    selectedItemIndex = ChangeSelectedItemIndex(selectedItemIndex, Direction.Down, menuItems.Count);
+                    break;
+            }
+
+        } while (key != ConsoleKey.Enter);
+
+        return selectedItemIndex;
+    }
+
+    
+    private static int ChangeSelectedItemIndex(int currentIndex, Direction direction, int itemCount)
+    {
+        if (direction == Direction.Up)
+        {
+            currentIndex--;
+            if (currentIndex < 0)
+            {
+                currentIndex = itemCount - 1;
+            }
+        }
+        else if (direction == Direction.Down)
+        {
+            currentIndex++;
+            if (currentIndex >= itemCount)
+            {
+                currentIndex = 0;
+            }
+        }
+
+        return currentIndex;
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        List<string> mainMenuItems = new List<string> { "Оформить заказ", "История заказов", "Выход" };
+
+        bool exit = false;
+        do
+        {
+            int choice = ArrowMenu.ShowMenu("Главное меню", mainMenuItems);
+
+            switch (choice)
+            {
+                case 0:
+                    CakeOrder order = new CakeOrder();
+                    order.PlaceOrder();
+                    break;
+                case 1:
+                    ShowOrderHistory();
+                    break;
+                case 2:
+                    exit = true;
+                    break;
+            }
+
+        } while (!exit);
+    }
+
+   
+    private static void ShowOrderHistory()
+    {
+        Console.Clear();
+        Console.WriteLine("История заказов:");
+
+        if (File.Exists("История заказов.txt"))
+        {
+            using (StreamReader reader = new StreamReader("История заказов.txt"))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    Console.WriteLine(line);
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine("История заказов пуста.");
+        }
+
+        Console.WriteLine("Нажмите любую клавишу для продолжения...");
+        Console.ReadKey();
+    }
+}
